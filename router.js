@@ -1,6 +1,8 @@
 import Router from 'express'
 import UserController from './users/UserController.js';
-import ProjectController from './project/ProjectController.js';
+import ProjectController from './projects/ProjectController.js';
+import StatusController from './statuses/StatusController.js';
+
 
 const router = new Router()
 
@@ -17,6 +19,8 @@ router.put('/projects', ProjectController.editeProject)
 router.post('/projects/search', ProjectController.getProjects)
 router.get('/projects/:name', ProjectController.getProject)
 router.delete('/projects/:id', ProjectController.deleteProject)
+
+router.get('/statuses', StatusController.getStatuses)
 
 
 export default router;
