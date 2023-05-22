@@ -44,10 +44,16 @@ class UserService {
         return updatedUserPassword
 
     }
-    async getUsers() {
-        const user = await User.find({}, excludeFilelds).exec()
-        return user
-
+    async getUsers(page, limit) {
+        if(!page) {
+            page = 1
+        }
+        if (!limit) {
+            limit = 10
+        }
+        const skip = (page - 1) * 10
+        const users = await User.find({}, excludeFilelds).skip(skip).limit(limit)
+        return {page, limit, users}
     }
     async getUser(name) {
         
