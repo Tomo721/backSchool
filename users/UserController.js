@@ -4,7 +4,8 @@ class UserController {
    
     async createUser(req, res) {
         try {
-            const user = await UserService.createUser(req.body, req.files.picture)
+            const test = req.files ? req.files.picture : null
+            const user = await UserService.createUser(req.body, test)
             res.json(user)
         }
         catch (e) {
@@ -31,9 +32,7 @@ class UserController {
     }
     async getUsers(req, res) {
         try {
-            const { page, limit } = req.query
-
-            const users = await UserService.getUsers(page, limit)
+            const users = await UserService.getUsers(req.body)
             return res.json(users)
         }
         catch (e) {
@@ -42,7 +41,7 @@ class UserController {
     }
     async getUser(req, res) {
         try {
-            const user = await UserService.getUser(req.params.name)
+            const user = await UserService.getUser(req.params.id)
             return res.json(user)
         }
         catch (e) {

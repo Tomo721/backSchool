@@ -22,7 +22,6 @@ class ProjectController {
     }
     async getProjects(req, res) {
         try {
-            // const { page, limit } = req.query
             const projects = await ProjectService.getProjects(req.body)
             return res.json(projects)
         }

@@ -9,7 +9,7 @@ const excludeFilelds = {
 
 class UserService {
     async createUser(user, picture) {
-        const fileName = fileService.saveFile(picture)
+        const fileName = picture ? fileService.saveFile(picture) : null
         const createdUser = await User.create({ ...user, picture: fileName })
         return createdUser;
     }
@@ -38,23 +38,40 @@ class UserService {
         return updatedUserPassword
 
     }
-    async getUsers(page, limit) {
-        if(!page) {
+    async getUsers(dto, page, limit) {
+        if (!dto.page) {
             page = 1
+        } else {
+            page = parseInt(dto.page)
         }
-        if (!limit) {
+
+        if (!dto.limit) {
             limit = 10
+        } else {
+            limit = parseInt(dto.limit)
         }
+
         const skip = (page - 1) * 10
-        const users = await User.find({}, excludeFilelds).skip(skip).limit(limit)
-        return {page, limit, users}
-    }
-    async getUser(name) {
-        
-        if (!name) {
+
+        if (!dto.filter.name) {
             throw new Error('name не указан')
         }
-        const user = await User.findOne({ "name": name }, excludeFilelds).exec()
+
+        const users = await User.find({ name: { $regex: dto.filter.name, $options: "i" }},
+            excludeFilelds).skip(skip).limit(limit)
+
+
+        return { page, limit, users }
+
+
+    }
+    async getUser(id) {
+        
+        if (!id) {
+            throw new Error('id не указан')
+        }
+        const user = await User.findById({}, excludeFilelds).exec()
+        // const user = await User.findOne({ "id": id }, excludeFilelds).exec()
 
         return user
     }
