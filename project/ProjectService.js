@@ -23,23 +23,41 @@ class ProjectService {
         return updatedProject
 
     }
-    async getProjects(page, limit) {
-        if (!page) {
+    async getProjects(dto, page, limit) {
+        if (!dto.page) {
             page = 1
+        } else {
+            page = parseInt(dto.page)
         }
-        if (!limit) {
+
+        if (!dto.limit) {
             limit = 10
+        } else {
+            limit = parseInt(dto.limit)
         }
+
         const skip = (page - 1) * 10
-        const projects = await Project.find({}, excludeFilelds).skip(skip).limit(limit)
-        return { page, limit, projects }
-    }
-    async getProject(name) {
+
+        const projects = await Project.find(
+            {
+                $or: [
+                    { name: dto.filter.name ? { $regex: dto.filter.name, $options: "i" } : '' },
+                    { code: dto.filter.code ? { $regex: dto.filter.code, $options: "i" } : '' },
+                ]
+            } , 
+            excludeFilelds).skip(skip).limit(limit)
+
         
-        if (!name) {
-            throw new Error('name не указан')
+        return { page, limit, projects }
+        
+
+    }
+    async getProject(id) {
+
+        if (!id) {
+            throw new Error('id не указан')
         }
-        const project = await Project.findOne({ "name": name }, excludeFilelds).exec()
+        const project = await Project.findById({}, excludeFilelds).exec()
 
         return project
     }

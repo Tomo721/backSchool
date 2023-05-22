@@ -22,9 +22,8 @@ class ProjectController {
     }
     async getProjects(req, res) {
         try {
-            const { page, limit } = req.query
-
-            const projects = await ProjectService.getProjects(page, limit)
+            // const { page, limit } = req.query
+            const projects = await ProjectService.getProjects(req.body)
             return res.json(projects)
         }
         catch (e) {
@@ -33,7 +32,7 @@ class ProjectController {
     }
     async getProject(req, res) {
         try {
-            const project = await ProjectService.getProject(req.params.name)
+            const project = await ProjectService.getProject(req.params.id)
             return res.json(project)
         }
         catch (e) {

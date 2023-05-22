@@ -12,7 +12,8 @@ router.get('/users/:name', UserController.getUser)
 
 router.post('/projects', ProjectController.createProject)
 router.put('/projects', ProjectController.editeProject)
-router.get('/projects', ProjectController.getProjects)
+// router.get('/projects', ProjectController.getProjects)
+router.post('/projects/search', ProjectController.getProjects)
 router.get('/projects/:name', ProjectController.getProject)
 router.delete('/projects/:id', ProjectController.deleteProject)
 
