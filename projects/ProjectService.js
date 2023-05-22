@@ -37,15 +37,20 @@ class ProjectService {
         }
 
         const skip = (page - 1) * 10
+        let projects; 
 
-        const projects = await Project.find(
-            {
-                $or: [
-                    { name: dto.filter.name ? { $regex: dto.filter.name, $options: "i" } : '' },
-                    { code: dto.filter.code ? { $regex: dto.filter.code, $options: "i" } : '' },
-                ]
-            } , 
-            excludeFilelds).skip(skip).limit(limit)
+        if (!dto.filter) {
+            projects = await Project.find({}, excludeFilelds).skip(skip).limit(limit)
+        } else {
+            projects = await Project.find(
+                {
+                    $or: [
+                        { name: dto.filter.name ? { $regex: dto.filter.name, $options: "i" } : '' },
+                        { code: dto.filter.code ? { $regex: dto.filter.code, $options: "i" } : '' },
+                    ]
+                },
+                excludeFilelds).skip(skip).limit(limit)
+        }
 
         
         return { page, limit, projects }

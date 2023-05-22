@@ -52,13 +52,16 @@ class UserService {
         }
 
         const skip = (page - 1) * 10
+        let users;
 
-        if (!dto.filter.name) {
-            throw new Error('name не указан')
+        if(!dto.filter) {
+            users = await User.find({},
+                excludeFilelds).skip(skip).limit(limit)
+        } else {
+
+            users = await User.find({ name: { $regex: dto.filter.name, $options: "i" }},
+                excludeFilelds).skip(skip).limit(limit)
         }
-
-        const users = await User.find({ name: { $regex: dto.filter.name, $options: "i" }},
-            excludeFilelds).skip(skip).limit(limit)
 
 
         return { page, limit, users }
