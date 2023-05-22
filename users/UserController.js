@@ -1,9 +1,10 @@
 import UserService from './UserService.js';
 
 class UserController {
+   
     async createUser(req, res) {
         try {
-            const user = await UserService.createUser(req.body)
+            const user = await UserService.createUser(req.body, req.files.picture)
             res.json(user)
         }
         catch (e) {
@@ -19,10 +20,19 @@ class UserController {
             res.status(500).json(e.message)
         }
     }
+    async updatePassword(req, res) {
+        try {
+            const updatedUserPassword = await UserService.updatePassword(req.body)
+            return res.json(updatedUserPassword)
+        }
+        catch (e) {
+            res.status(500).json(e.message)
+        }
+    }
     async getUsers(req, res) {
         try {
-            const posts = await UserService.getUsers()
-            return res.json(posts)
+            const users = await UserService.getUsers()
+            return res.json(users)
         }
         catch (e) {
             res.status(500).json(e)
@@ -30,7 +40,7 @@ class UserController {
     }
     async getUser(req, res) {
         try {
-            const user = await UserService.getUser(req.params.id)
+            const user = await UserService.getUser(req.params.name)
             return res.json(user)
         }
         catch (e) {

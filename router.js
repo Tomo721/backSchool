@@ -5,8 +5,9 @@ const router = new Router()
 
 router.post('/users', UserController.createUser)
 router.put('/users', UserController.updateUser)
+router.put('/users/password', UserController.updatePassword)
 router.get('/users', UserController.getUsers)
-router.get('/users/:id', UserController.getUser)
+router.get('/users/:name', UserController.getUser)
 
 export default router;
 

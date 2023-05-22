@@ -1,4 +1,5 @@
 import User from './User.js';
+import fileService from '../fileService.js';
 
 const excludeFilelds = {
     login: false,
@@ -7,16 +8,40 @@ const excludeFilelds = {
 }
 
 class UserService {
-    async createUser(user) {
-        const createdUser = await User.create(user)
+    // async create(post, picture) {
+    //     const fileName = fileService.saveFile(picture)
+    //     const createdPost = await Post.create({...post, picture: fileName})
+    //     return createdPost;
+        
+    // }
+    async createUser(user, picture) {
+        const fileName = fileService.saveFile(picture)
+        const createdUser = await User.create({ ...user, picture: fileName })
         return createdUser;
     }
     async updateUser(user) {
         if (!user._id) {
             throw new Error('id не указан')
         }
+        if (user.login) {
+            throw new Error('login изменять нельзя')
+        }
+        if (user.password) {
+            throw new Error('password изменять нельзя')
+        }
         const updatedUser = await User.findByIdAndUpdate(user._id, user, { new: true })
         return updatedUser
+
+    }
+    async updatePassword(user) {
+        if (!user._id) {
+            throw new Error('id не указан')
+        }
+        if (user.login) {
+            throw new Error('login изменять нельзя')
+        }
+        const updatedUserPassword = await User.findByIdAndUpdate(user._id, user, { new: true })
+        return updatedUserPassword
 
     }
     async getUsers() {
@@ -24,11 +49,12 @@ class UserService {
         return user
 
     }
-    async getUser(id) {
-        if (!id) {
-            throw new Error('id не указан')
-        } 
-        const user = await User.findById(id, excludeFilelds).exec()
+    async getUser(name) {
+        
+        if (!name) {
+            throw new Error('name не указан')
+        }
+        const user = await User.findOne({ "name": name }, excludeFilelds).exec()
 
         return user
     }
