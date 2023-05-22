@@ -8,12 +8,6 @@ const excludeFilelds = {
 }
 
 class UserService {
-    // async create(post, picture) {
-    //     const fileName = fileService.saveFile(picture)
-    //     const createdPost = await Post.create({...post, picture: fileName})
-    //     return createdPost;
-        
-    // }
     async createUser(user, picture) {
         const fileName = fileService.saveFile(picture)
         const createdUser = await User.create({ ...user, picture: fileName })
