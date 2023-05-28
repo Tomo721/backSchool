@@ -6,7 +6,8 @@ class UserController {
         try {
             const picture = req.files ? req.files.picture : null
             const user = await UserService.createUser(req.body, picture)
-            res.json(user)
+            // res.json(user)\
+            return user
         }
         catch (e) {
             res.status(500).json(e)
