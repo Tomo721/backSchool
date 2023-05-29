@@ -20,7 +20,7 @@ class AuthController {
             if (candidate) {
                 return res.status(400).json({message: 'Пользователь с таким именем уже существует'})
             }
-            
+
             const hashPassword = bcrypt.hashSync(password, 3)
             const userRole = await Role.findOne({value: "USER"})
 
