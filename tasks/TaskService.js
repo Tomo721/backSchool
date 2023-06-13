@@ -39,14 +39,15 @@ class Taskservice {
             sortType = dto.sort.type === 'desc' ? -1 : 1
         }
 
-        if (dto.filter.dateEnd) {
+        if (dto.filter && dto.filter.dateEnd) {
             dto.filter.dateEnd = new Date(dto.filter.dateEnd)
             dto.filter.dateEnd.setDate(dto.filter.dateEnd.getDate() + 1);
         }
-
+        
         if (!dto.filter) {
             tasks = await Task.find({}, excludeFilelds).skip(skip).limit(limit).sort(sortField ? { [sortField]: sortType } : {})
         } else {
+            
             tasks = await Task.find(
                 {
                     $or: [
@@ -70,7 +71,7 @@ class Taskservice {
         if (!id) {
             throw new Error('id не указан')
         }
-        const task = await Task.findById({}, excludeFilelds).exec()
+        const task = await Task.findById(id, excludeFilelds).exec()
 
         return task
     }
