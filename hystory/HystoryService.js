@@ -5,9 +5,11 @@ const excludeFilelds = {
 }
 
 class Hystoryservice {
-    async getHystory() {
+    async getHystory(taskId) {
         const hystory = await Hystory.find({}, excludeFilelds)
-        return { hystory }
+        const hystoryFiltered = hystory.filter(x => x.taskId === taskId)
+        
+        return hystoryFiltered
 
     }
 

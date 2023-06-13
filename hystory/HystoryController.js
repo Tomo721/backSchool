@@ -3,7 +3,7 @@ import HystoryService from './HystoryService.js';
 class HystoryController {
     async getHystory(req, res) {
         try {
-            const hystory = await HystoryService.getHystory()
+            const hystory = await HystoryService.getHystory(req.params.id)
             return res.json(hystory)
         }
         catch (e) {
