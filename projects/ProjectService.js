@@ -13,12 +13,10 @@ class ProjectService {
         if (!project._id) {
             throw new Error('id не указан')
         }
-        if (!project.dataEdited) {
-            throw new Error('dataEdited не указан')
+        if (project.dataCreated) {
+            throw new Error('dataCreated изменять нельзя')
         }
         
-        // после авторизации сделать проверку на автора ???
-
         const updatedProject = await Project.findByIdAndUpdate(project._id, project, { new: true })
         return updatedProject
 
@@ -39,8 +37,16 @@ class ProjectService {
         const skip = (page - 1) * 10
         let projects; 
 
+        let sortField = null
+        let sortType = 1
+
+        if (dto.sort) {
+            sortField = dto.sort.field
+            sortType = dto.sort.type === 'desc' ? -1 : 1
+        }
+
         if (!dto.filter) {
-            projects = await Project.find({}, excludeFilelds).skip(skip).limit(limit)
+            projects = await Project.find({}, excludeFilelds).skip(skip).limit(limit).sort(sortField ? { [sortField]: sortType } : {})
         } else {
             projects = await Project.find(
                 {
@@ -49,7 +55,7 @@ class ProjectService {
                         { code: dto.filter.code ? { $regex: dto.filter.code, $options: "i" } : '' },
                     ]
                 },
-                excludeFilelds).skip(skip).limit(limit)
+                excludeFilelds).skip(skip).limit(limit).sort(sortField ? { [sortField]: sortType } : {})
         }
 
         
@@ -62,7 +68,7 @@ class ProjectService {
         if (!id) {
             throw new Error('id не указан')
         }
-        const project = await Project.findById({}, excludeFilelds).exec()
+        const project = await Project.findById(id, excludeFilelds).exec()
 
         return project
     }

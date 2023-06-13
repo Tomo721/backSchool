@@ -6,7 +6,7 @@ class UserController {
         try {
             const picture = req.files ? req.files.picture : null
             const user = await UserService.createUser(req.body, picture)
-            // res.json(user)\
+            
             return user
         }
         catch (e) {
@@ -31,6 +31,23 @@ class UserController {
             res.status(500).json(e.message)
         }
     }
+    async updateStatus(req, res) {
+        try {
+            let isAdmin;
+
+            if (req.session.user.roles.indexOf('ADMIN') !== -1) {
+                isAdmin = true
+            } else {
+                isAdmin = false
+            }
+
+            const updatedUserStatus = await UserService.updateStatus(req.body, isAdmin)
+            return res.json(updatedUserStatus)
+        }
+        catch (e) {
+            res.status(500).json(e.message)
+        }
+    }
     async getUsers(req, res) {
         try {
             const users = await UserService.getUsers(req.body)
@@ -40,15 +57,15 @@ class UserController {
             res.status(500).json(e)
         }
     }
-    async getUser(req, res) {
-        try {
-            const user = await UserService.getUser(req.params.id)
-            return res.json(user)
-        }
-        catch (e) {
-            res.status(500).json(e)
-        }
-    }
+    // async getUser(req, res) {
+    //     try {
+    //         const user = await UserService.getUser(req.params.id)
+    //         return res.json(user)
+    //     }
+    //     catch (e) {
+    //         res.status(500).json(e)
+    //     }
+    // }
 }
 
 export default new UserController()

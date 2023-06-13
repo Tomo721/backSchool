@@ -10,17 +10,8 @@ class Taskservice {
         return createdTask;
     }
     async editeTask(task) {
-        console.log('task', task)
-        if (!task._id) {
-            throw new Error('id не указан')
-        }
-        if (!task.dataEdited) {
-            throw new Error('dataEdited не указан')
-        }
-        
-        // после авторизации сделать проверку на автора ???
-
         const updatedTask = await Task.findByIdAndUpdate(task._id, task, { new: true })
+
         return updatedTask
 
     }
@@ -40,8 +31,21 @@ class Taskservice {
         const skip = (page - 1) * 10
         let tasks; 
 
+        let sortField = null
+        let sortType = 1
+
+        if (dto.sort) {
+            sortField = dto.sort.field
+            sortType = dto.sort.type === 'desc' ? -1 : 1
+        }
+
+        if (dto.filter.dateEnd) {
+            dto.filter.dateEnd = new Date(dto.filter.dateEnd)
+            dto.filter.dateEnd.setDate(dto.filter.dateEnd.getDate() + 1);
+        }
+
         if (!dto.filter) {
-            tasks = await Task.find({}, excludeFilelds).skip(skip).limit(limit)
+            tasks = await Task.find({}, excludeFilelds).skip(skip).limit(limit).sort(sortField ? { [sortField]: sortType } : {})
         } else {
             tasks = await Task.find(
                 {
@@ -50,16 +54,13 @@ class Taskservice {
                         { author: dto.filter.author ? dto.filter.author : '' },
                         { status: dto.filter.status ? dto.filter.status : '' },
                         { executor: dto.filter.executor ? dto.filter.executor : '' },
+                        { dataCreated: { $gte: new Date(dto.filter.dateStart), $lte: dto.filter.dateEnd }},
                     ],
-                    // dataCreated: {
-                    //     $gt: ISODate(dto.filter.dateStart),
-                    //     $lt: ISODate(dto.filter.dateEnd)
-                    // }
+                  
                 },
-                excludeFilelds).skip(skip).limit(limit)
+                excludeFilelds).skip(skip).limit(limit).sort(sortField ? { [sortField]: sortType } : {})
         }
 
-        
         return { page, limit, tasks }
         
 
