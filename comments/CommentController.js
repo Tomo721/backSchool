@@ -58,12 +58,23 @@ class CommentController {
     }
     async deleteComment(req, res) {
         try {
+            let isAdmin;
+
             if (req.session.user.roles.indexOf('ADMIN') !== -1) {
-                const comment = await CommentService.deleteComment(req.params.id)
-                return res.json(comment)
+                isAdmin = true
             } else {
-                return res.status(500).json({ message: 'Только ADMIN может удалять комментарии' })
+                isAdmin = false
             }
+
+            const authorAuth = req.session.user._id
+            const commentBD = await Comment.findById(req.params.id)
+            
+            if (commentBD.author !== authorAuth || !isAdmin) {
+                return res.status(500).json({ message: 'Можно удалять только свои комментарии' })
+            }
+
+            await CommentService.deleteComment(req.params.id)
+            return res.status(200).json({ message: `Комментарий удален` })
             
         }
         catch (e) {

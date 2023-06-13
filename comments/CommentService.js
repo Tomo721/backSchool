@@ -25,7 +25,7 @@ class Commentservice {
     async getComments(taskId) {
         let comments = await Comment.find({}, excludeFilelds)
         const commentsFiltered = comments.filter(x => x.taskId === taskId)
-        
+
         return commentsFiltered
     }
     async deleteComment(id) {
@@ -34,7 +34,6 @@ class Commentservice {
         }
         const comment = await Comment.findByIdAndDelete(id)
         return comment
-
     }
 }
 
