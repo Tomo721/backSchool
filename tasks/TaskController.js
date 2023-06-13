@@ -13,7 +13,7 @@ class TaskController {
             let payload = req.body
 
             payload.author = req.session.user._id
-            payload.executor = req.session.user._id
+            payload.executor = payload.executor || req.session.user._id
             
             Project.findById(payload.projectId).exec(function (error) {
                 if (error) {
@@ -65,6 +65,10 @@ class TaskController {
                         return res.status(500).json({ message: 'Такого проекта не существует' })
                     }
                 });
+
+                const taskBDList = await Task.find()
+                const taskBDFilteredProject = taskBDList.filter(x => x.projectId === payload.projectId)
+                payload.number = taskBDFilteredProject.length + 1
             }
             if (payload.executor) {
                 User.findById(payload.executor).exec(function (error) {
