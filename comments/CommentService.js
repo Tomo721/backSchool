@@ -1,4 +1,5 @@
 import Comment from './Comment.js';
+import Task from '../tasks/Task.js';
 
 const excludeFilelds = {
     __v: false,
@@ -21,12 +22,12 @@ class Commentservice {
         return updatedComment
 
     }
-    async getComments(dto) {
-        let Comments;
-        
-        Comments = await Comment.find({}, excludeFilelds)
-        
-        return { Comments }
+    async getComments(taskId) {
+        let comments = await Comment.find({}, excludeFilelds)
+        console.log('taskId', taskId)
+        const commentsFiltered = comments.filter(x => x.taskId === taskId)
+        console.log('commentsFiltered', commentsFiltered)
+        return commentsFiltered
     }
     async deleteComment(id) {
         if (!id) {

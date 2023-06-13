@@ -49,7 +49,7 @@ class CommentController {
     }
     async getComments(req, res) {
         try {
-            const Comments = await CommentService.getComments(req.body)
+            const Comments = await CommentService.getComments(req.params.id)
             return res.json(Comments)
         }
         catch (e) {
