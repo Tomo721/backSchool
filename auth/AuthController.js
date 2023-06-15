@@ -22,13 +22,13 @@ class AuthController {
             }
 
             const hashPassword = bcrypt.hashSync(password, 3)
-            const userRole = await Role.findOne({value: "USER"})
+            const userRole = await Role.findOne({value: "ADMIN"})
 
             req.body.password = hashPassword
             req.body.roles = [userRole.value]
 
-            const user = await UserController.createUser(req)
-            res.json(user)
+            await UserController.createUser(req)
+            res.json('Пользователь зарегистрирован')
         }
         catch (e) {
             console.log('registration error', e)
