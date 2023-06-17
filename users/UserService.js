@@ -96,8 +96,15 @@ class UserService {
             users = await User.find({}, excludeFilelds).skip(skip).limit(limit)
         }
 
+        const usersAll = await User.find()
+        
+        let total = Math.floor(usersAll.length / limit);
 
-        return { page, limit, users }
+        if (usersAll.length % limit >= 1) {
+            total++;
+        };
+
+        return { page, limit, total, users }
 
 
     }

@@ -58,8 +58,15 @@ class ProjectService {
                 excludeFilelds).skip(skip).limit(limit).sort(sortField ? { [sortField]: sortType } : {})
         }
 
+        const projectAll = await Project.find()
         
-        return { page, limit, projects }
+        let total = Math.floor(projectAll.length / limit);
+
+        if (projectAll.length % limit >= 1) {
+            total++;
+        };
+        
+        return { page, limit, total, projects }
         
 
     }
