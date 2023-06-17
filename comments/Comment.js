@@ -24,7 +24,7 @@ const Comment = new mongoose.Schema({
     },
     dataCreated: {
         type: String,
-        default: new Date()
+        default: new Date().toISOString().split('T')[0]
     },
     dataEdited: {
         type: String,

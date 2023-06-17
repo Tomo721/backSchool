@@ -23,7 +23,7 @@ const Hystory = new mongoose.Schema({
     },
     dataEdited: {
         type: String, 
-        default: new Date()
+        default: new Date().toISOString().split('T')[0]
     },
 });
 

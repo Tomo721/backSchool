@@ -17,7 +17,7 @@ const Task = new mongoose.Schema({
     status: { type: String, default: 'DRAFT' },
     author: { type: String, default: null },
     authorEdited: { type: String, default: null },
-    dataCreated: { type: String, default: new Date() },
+    dataCreated: { type: String, default: new Date().toISOString().split('T')[0] },
     dataEdited: { type: String, default: null },
     executor: { type: String, default: null },
     time: { type: Number, default: null },

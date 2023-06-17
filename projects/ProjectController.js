@@ -20,7 +20,7 @@ class ProjectController {
             req.body.author = authorAuth
             req.body.authorEdited = authorAuth
 
-            req.body.dataEdited = new Date()
+            req.body.dataEdited = new Date().toISOString().split('T')[0]
 
             const projectBD = await Project.findById(req.body._id)
 

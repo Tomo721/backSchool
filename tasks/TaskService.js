@@ -65,7 +65,7 @@ class Taskservice {
         const taskAll = await Task.find()
 
         let total = Math.floor(taskAll.length / limit);
-        console.log('taskAll.length', taskAll.length)
+
         if (taskAll.length % limit >= 1) {
             total++;
         };

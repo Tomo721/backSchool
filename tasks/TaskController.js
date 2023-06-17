@@ -52,7 +52,7 @@ class TaskController {
             const authorAuth = req.session.user._id
             payload.author = authorAuth
             payload.authorEdited = authorAuth
-            payload.dataEdited = new Date()
+            payload.dataEdited = new Date().toISOString().split('T')[0]
 
             const taskBD = await Task.findById(payload._id)
 
