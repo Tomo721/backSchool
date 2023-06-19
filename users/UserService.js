@@ -42,8 +42,6 @@ class UserService {
             throw new Error('status изменять нельзя')
         }
         user.password = bcrypt.hashSync(user.password, 3)
-        console.log('user.password ', user.password)
-            
 
         const updatedUserPassword = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v'})
         return updatedUserPassword

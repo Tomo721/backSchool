@@ -146,7 +146,6 @@ class TaskController {
                 isAdmin = false
             }
 
-            console.log('req.user', req.user)
             const authorAuth = req.user.id
             const taskBD = await Task.findById(req.params.id)
 
