@@ -1,11 +1,12 @@
 import ProjectService from './ProjectService.js';
 import Project from './Project.js';
+import mongoose from 'mongoose'
 
 class ProjectController {
    
     async createProject(req, res) {
         try {
-            req.body.author = req.session.user._id
+            req.body.author = req.user._id
 
             const project = await ProjectService.createProject(req.body)
             res.json(project)
@@ -16,11 +17,11 @@ class ProjectController {
     }
     async editeProject(req, res) {
         try {
-            const authorAuth = req.session.user._id
+            const authorAuth = req.user._id
             req.body.author = authorAuth
             req.body.authorEdited = authorAuth
 
-            req.body.dataEdited = new Date().toISOString().split('T')[0]
+            req.body.dateEdited = new Date().toISOString().split('T')[0]
 
             const projectBD = await Project.findById(req.body._id)
 
@@ -46,8 +47,17 @@ class ProjectController {
     }
     async getProject(req, res) {
         try {
-            const project = await ProjectService.getProject(req.params.id)
-            return res.json(project)
+            if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+                const project = await ProjectService.getProject(req.params.id)
+
+                if (project.id) {
+                    return res.json(project)
+                } else {
+                    return res.status(400).json(project)
+                }
+            } else {
+                return res.status(400).json({ message: 'Неверный формат id' })
+            }
         }
         catch (e) {
             res.status(500).json(e)
@@ -57,13 +67,13 @@ class ProjectController {
         try {
             let isAdmin;
 
-            if (req.session.user.roles.indexOf('ADMIN') !== -1) {
+            if (req.user.roles.indexOf('ADMIN') !== -1) {
                 isAdmin = true
             } else {
                 isAdmin = false
             }
 
-            const authorAuth = req.session.user._id
+            const authorAuth = req.user._id
             const projectBD = await Project.findById(req.params.id)
 
             if (projectBD.author !== authorAuth || !isAdmin) {

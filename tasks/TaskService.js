@@ -55,7 +55,7 @@ class Taskservice {
                         { author: dto.filter.author ? dto.filter.author : '' },
                         { status: dto.filter.status ? dto.filter.status : '' },
                         { executor: dto.filter.executor ? dto.filter.executor : '' },
-                        { dataCreated: { $gte: new Date(dto.filter.dateStart), $lte: dto.filter.dateEnd }},
+                        { dateCreated: { $gte: new Date(dto.filter.dateStart), $lte: dto.filter.dateEnd }},
                     ],
                   
                 },
@@ -81,7 +81,12 @@ class Taskservice {
         }
         const task = await Task.findById(id, excludeFilelds).exec()
 
-        return task
+        if (task) {
+            return task
+        } else {
+            return { message: 'Задачи с таким id не существует' }
+        }
+
     }
     async deleteTask(id) {
         if (!id) {

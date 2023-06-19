@@ -27,7 +27,7 @@ class UserService {
         if (user.status) {
             throw new Error('status изменять нельзя')
         }
-        const updatedUser = await User.findByIdAndUpdate(user._id, user, { new: true })
+        const updatedUser = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
         return updatedUser
 
     }
@@ -43,7 +43,9 @@ class UserService {
         }
         user.password = bcrypt.hashSync(user.password, 3)
         console.log('user.password ', user.password)
-        const updatedUserPassword = await User.findByIdAndUpdate(user._id, user, { new: true })
+            
+
+        const updatedUserPassword = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v'})
         return updatedUserPassword
 
     }
@@ -58,7 +60,7 @@ class UserService {
             throw new Error('Только ADMIN может изменить статус пользователя')
         }
         
-        const updatedUserStatus = await User.findByIdAndUpdate(user._id, user, { new: true })
+        const updatedUserStatus = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
         return updatedUserStatus
 
     }

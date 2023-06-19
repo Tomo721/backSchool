@@ -35,7 +35,7 @@ class UserController {
         try {
             let isAdmin;
 
-            if (req.session.user.roles.indexOf('ADMIN') !== -1) {
+            if (req.user.roles.indexOf('ADMIN') !== -1) {
                 isAdmin = true
             } else {
                 isAdmin = false

@@ -21,7 +21,7 @@ const Hystory = new mongoose.Schema({
         type: String,
         default: ''
     },
-    dataEdited: {
+    dateEdited: {
         type: String, 
         default: new Date().toISOString().split('T')[0]
     },

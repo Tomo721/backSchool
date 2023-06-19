@@ -5,7 +5,7 @@ import StatusService from '../statuses/StatusService.js';
 import HystoryFields from '../hystory/HystoryFields.js';
 import Hystory from '../hystory/Hystory.js';
 import User from '../users/User.js';
-
+import mongoose from 'mongoose'
 
 class TaskController {
    
@@ -13,8 +13,8 @@ class TaskController {
         try {
             let payload = req.body
 
-            payload.author = req.session.user._id
-            payload.executor = payload.executor || req.session.user._id
+            payload.author = req.user._id
+            payload.executor = payload.executor || req.user._id
             
             Project.findById(payload.projectId).exec(function (error) {
                 if (error) {
@@ -49,10 +49,10 @@ class TaskController {
                 return res.status(500).json({ message: 'id не указан' })
             }
 
-            const authorAuth = req.session.user._id
+            const authorAuth = req.user._id
             payload.author = authorAuth
             payload.authorEdited = authorAuth
-            payload.dataEdited = new Date().toISOString().split('T')[0]
+            payload.dateEdited = new Date().toISOString().split('T')[0]
 
             const taskBD = await Task.findById(payload._id)
 
@@ -121,8 +121,16 @@ class TaskController {
     }
     async getTask(req, res) {
         try {
-            const task = await TaskService.getTask(req.params.id)
-            return res.json(task)
+            if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+                const task = await TaskService.getTask(req.params.id)
+                if (task.id) {
+                    return res.json(task)
+                } else {
+                    return res.status(400).json(task)
+                }
+            } else {
+                return res.status(400).json({ message: 'Неверный формат id' })
+            }
         }
         catch (e) {
             res.status(500).json(e)
@@ -132,13 +140,14 @@ class TaskController {
         try {
             let isAdmin;
 
-            if (req.session.user.roles.indexOf('ADMIN') !== -1) {
+            if (req.user.roles.indexOf('ADMIN') !== -1) {
                 isAdmin = true
             } else {
                 isAdmin = false
             }
 
-            const authorAuth = req.session.user._id
+            console.log('req.user', req.user)
+            const authorAuth = req.user.id
             const taskBD = await Task.findById(req.params.id)
 
             if (taskBD.author !== authorAuth || !isAdmin) {
@@ -149,7 +158,7 @@ class TaskController {
             return res.status(200).json({ message: `Задача удалена` })
         }
         catch (e) {
-            res.status(500).json(e)
+            res.status(500).json({message: `${e}`})
         }
     }
 }

@@ -14,7 +14,7 @@ class TimeController {
                 }
             });
 
-            const authorAuth = req.session.user._id
+            const authorAuth = req.user._id
 
             const taskBD = await Task.findById(payload.taskId)
 

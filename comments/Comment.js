@@ -22,11 +22,11 @@ const Comment = new mongoose.Schema({
         type: String,
         default: null
     },
-    dataCreated: {
+    dateCreated: {
         type: String,
         default: new Date().toISOString().split('T')[0]
     },
-    dataEdited: {
+    dateEdited: {
         type: String,
         default: null
     },

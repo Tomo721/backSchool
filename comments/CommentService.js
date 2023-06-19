@@ -14,8 +14,8 @@ class Commentservice {
         if (!comment._id) {
             throw new Error('id не указан')
         }
-        if (comment.dataCreated) {
-            throw new Error('dataCreated изменять нельзя')
+        if (comment.dateCreated) {
+            throw new Error('dateCreated изменять нельзя')
         }
         
         const updatedComment = await Comment.findByIdAndUpdate(comment._id, comment, { new: true })

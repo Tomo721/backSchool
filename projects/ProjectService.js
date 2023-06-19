@@ -13,8 +13,8 @@ class ProjectService {
         if (!project._id) {
             throw new Error('id не указан')
         }
-        if (project.dataCreated) {
-            throw new Error('dataCreated изменять нельзя')
+        if (project.dateCreated) {
+            throw new Error('dateCreated изменять нельзя')
         }
         
         const updatedProject = await Project.findByIdAndUpdate(project._id, project, { new: true })
@@ -75,9 +75,15 @@ class ProjectService {
         if (!id) {
             throw new Error('id не указан')
         }
+
         const project = await Project.findById(id, excludeFilelds).exec()
 
-        return project
+        if (project) {
+            return project
+        } else {
+            return { message: 'Проекта с таким id не существует'}
+        }
+        
     }
     async deleteProject(id) {
         if (!id) {
