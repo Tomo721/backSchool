@@ -6,7 +6,7 @@ class CommentController {
    
     async createComment(req, res) {
         try {
-            const authorAuth = req.user._id
+            const authorAuth = req.user.id
             req.body.author = authorAuth
 
             Task.findById(req.body.taskId).exec(function (error) {
@@ -29,7 +29,7 @@ class CommentController {
                     return res.status(500).json({ message: 'Такой задачи не существует' })
                 }
             });
-            const authorAuth = req.user._id
+            const authorAuth = req.user.id
             req.body.author = authorAuth
             req.body.authorEdited = authorAuth
             req.body.dateEdited = new Date().toISOString().split('T')[0]
@@ -66,7 +66,7 @@ class CommentController {
                 isAdmin = false
             }
 
-            const authorAuth = req.user._id
+            const authorAuth = req.user.id
             const commentBD = await Comment.findById(req.params.id)
             
             if (commentBD.author !== authorAuth || !isAdmin) {

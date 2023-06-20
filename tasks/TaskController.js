@@ -13,8 +13,8 @@ class TaskController {
         try {
             let payload = req.body
 
-            payload.author = req.user._id
-            payload.executor = payload.executor || req.user._id
+            payload.author = req.user.id
+            payload.executor = payload.executor || req.user.id
             
             Project.findById(payload.projectId).exec(function (error) {
                 if (error) {
@@ -49,7 +49,7 @@ class TaskController {
                 return res.status(500).json({ message: 'id не указан' })
             }
 
-            const authorAuth = req.user._id
+            const authorAuth = req.user.id
             payload.author = authorAuth
             payload.authorEdited = authorAuth
             payload.dateEdited = new Date().toISOString().split('T')[0]

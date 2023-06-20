@@ -6,7 +6,7 @@ class ProjectController {
    
     async createProject(req, res) {
         try {
-            req.body.author = req.user._id
+            req.body.author = req.user.id
 
             const project = await ProjectService.createProject(req.body)
             res.json(project)
@@ -17,7 +17,7 @@ class ProjectController {
     }
     async editeProject(req, res) {
         try {
-            const authorAuth = req.user._id
+            const authorAuth = req.user.id
             req.body.author = authorAuth
             req.body.authorEdited = authorAuth
 
@@ -73,7 +73,7 @@ class ProjectController {
                 isAdmin = false
             }
 
-            const authorAuth = req.user._id
+            const authorAuth = req.user.id
             const projectBD = await Project.findById(req.params.id)
 
             if (projectBD.author !== authorAuth || !isAdmin) {
