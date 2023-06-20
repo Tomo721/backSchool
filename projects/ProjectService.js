@@ -71,11 +71,6 @@ class ProjectService {
 
     }
     async getProject(id) {
-
-        if (!id) {
-            throw new Error('id не указан')
-        }
-
         const project = await Project.findById(id, excludeFilelds).exec()
 
         if (project) {
@@ -86,9 +81,6 @@ class ProjectService {
         
     }
     async deleteProject(id) {
-        if (!id) {
-            throw new Error('id не указан')
-        }
         const project = await Project.findByIdAndDelete(id)
         return project
 

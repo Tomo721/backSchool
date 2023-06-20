@@ -1,6 +1,7 @@
 import CommentService from './CommentService.js';
 import Comment from './Comment.js';
 import Task from '../tasks/Task.js';
+import mongoose from 'mongoose'
 
 class CommentController {
    
@@ -49,8 +50,17 @@ class CommentController {
     }
     async getComments(req, res) {
         try {
-            const Comments = await CommentService.getComments(req.params.id)
-            return res.json(Comments)
+            if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+                const comments = await CommentService.getComments(req.params.id)
+                
+                if (!comments.message) {
+                    return res.json(comments)
+                } else {
+                    return res.status(400).json(comments)
+                }
+            } else {
+                return res.status(400).json({ message: 'Неверный формат id' })
+            }
         }
         catch (e) {
             res.status(500).json(e)
@@ -58,23 +68,33 @@ class CommentController {
     }
     async deleteComment(req, res) {
         try {
-            let isAdmin;
+            if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+                const comments = await CommentService.getCommentsBeforeDelete(req.params.id)
 
-            if (req.user.roles.indexOf('ADMIN') !== -1) {
-                isAdmin = true
+                if (comments.id) {
+                    let isAdmin;
+
+                    if (req.user.roles.indexOf('ADMIN') !== -1) {
+                        isAdmin = true
+                    } else {
+                        isAdmin = false
+                    }
+
+                    const authorAuth = req.user.id
+                    const commentBD = await Comment.findById(req.params.id)
+
+                    if (commentBD.author !== authorAuth || !isAdmin) {
+                        return res.status(500).json({ message: 'Можно удалять только свои комментарии' })
+                    }
+
+                    await CommentService.deleteComment(req.params.id)
+                    return res.status(200).json({ message: `Комментарий удален` })
+                } else {
+                    return res.status(400).json(comments)
+                }
             } else {
-                isAdmin = false
+                return res.status(400).json({ message: 'Неверный формат id' })
             }
-
-            const authorAuth = req.user.id
-            const commentBD = await Comment.findById(req.params.id)
-            
-            if (commentBD.author !== authorAuth || !isAdmin) {
-                return res.status(500).json({ message: 'Можно удалять только свои комментарии' })
-            }
-
-            await CommentService.deleteComment(req.params.id)
-            return res.status(200).json({ message: `Комментарий удален` })
             
         }
         catch (e) {

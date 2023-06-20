@@ -138,23 +138,32 @@ class TaskController {
     }
     async deleteTask(req, res) {
         try {
-            let isAdmin;
+            if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+                const task = await TaskService.getTask(req.params.id)
+                if (task.id) {
+                    let isAdmin;
 
-            if (req.user.roles.indexOf('ADMIN') !== -1) {
-                isAdmin = true
+                    if (req.user.roles.indexOf('ADMIN') !== -1) {
+                        isAdmin = true
+                    } else {
+                        isAdmin = false
+                    }
+
+                    const authorAuth = req.user.id
+                    const taskBD = await Task.findById(task.id)
+
+                    if (taskBD.author !== authorAuth || !isAdmin) {
+                        return res.status(500).json({ message: 'Можно удалять только свои задачи' })
+                    }
+
+                    await TaskService.deleteTask(task.id)
+                    return res.status(200).json({ message: `Задача удалена` })
+                } else {
+                    return res.status(400).json(task)
+                }
             } else {
-                isAdmin = false
+                return res.status(400).json({ message: 'Неверный формат id' })
             }
-
-            const authorAuth = req.user.id
-            const taskBD = await Task.findById(req.params.id)
-
-            if (taskBD.author !== authorAuth || !isAdmin) {
-                return res.status(500).json({ message: 'Можно удалять только свои задачи' })
-            }
-
-            await TaskService.deleteTask(req.params.id)
-            return res.status(200).json({ message: `Задача удалена` })
         }
         catch (e) {
             res.status(500).json({message: `${e}`})

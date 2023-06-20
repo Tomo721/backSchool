@@ -65,23 +65,31 @@ class ProjectController {
     }
     async deleteProject(req, res) {
         try {
-            let isAdmin;
+            if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+                const project = await ProjectService.getProject(req.params.id)
+                if (project.id) {
+                    let isAdmin;
 
-            if (req.user.roles.indexOf('ADMIN') !== -1) {
-                isAdmin = true
+                    if (req.user.roles.indexOf('ADMIN') !== -1) {
+                        isAdmin = true
+                    } else {
+                        isAdmin = false
+                    }
+
+                    const authorAuth = req.user.id
+
+                    if (project.author !== authorAuth || !isAdmin) {
+                        return res.status(500).json({ message: 'Можно удалять только свои проекты' })
+                    }
+
+                    await ProjectService.deleteProject(project.id)
+                    return res.status(200).json({ message: `Проект удален` })
+                } else {
+                    return res.status(400).json(project)
+                }
             } else {
-                isAdmin = false
+                return res.status(400).json({ message: 'Неверный формат id' })
             }
-
-            const authorAuth = req.user.id
-            const projectBD = await Project.findById(req.params.id)
-
-            if (projectBD.author !== authorAuth || !isAdmin) {
-                return res.status(500).json({ message: 'Можно удалять только свои проекты' })
-            }
-
-            await ProjectService.deleteProject(req.params.id)
-            return res.status(200).json({ message: `Проект удален` })
         }
         catch (e) {
             res.status(500).json(e)

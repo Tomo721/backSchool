@@ -75,10 +75,6 @@ class Taskservice {
 
     }
     async getTask(id) {
-
-        if (!id) {
-            throw new Error('id не указан')
-        }
         const task = await Task.findById(id, excludeFilelds).exec()
 
         if (task) {
@@ -89,9 +85,6 @@ class Taskservice {
 
     }
     async deleteTask(id) {
-        if (!id) {
-            throw new Error('id не указан')
-        }
         const task = await Task.findByIdAndDelete(id)
         return task
 

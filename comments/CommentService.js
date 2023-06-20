@@ -23,15 +23,28 @@ class Commentservice {
 
     }
     async getComments(taskId) {
+        const task = await Task.findById(taskId, excludeFilelds).exec()
         let comments = await Comment.find({}, excludeFilelds)
-        const commentsFiltered = comments.filter(x => x.taskId === taskId)
+        
+        if (task) {
+            const commentsFiltered = comments.filter(x => x.taskId === taskId)
+            return commentsFiltered
+        } else {
+            return { message: 'Задачи с таким id не существует' }
+        }
 
-        return commentsFiltered
+    }
+    async getCommentsBeforeDelete(taskId) {
+        let comments = await Comment.findById(taskId, excludeFilelds).exec()
+
+        if (comments) {
+            return comments
+        } else {
+            return { message: 'Комментария с таким id не существует' }
+        }
+
     }
     async deleteComment(id) {
-        if (!id) {
-            throw new Error('id не указан')
-        }
         const comment = await Comment.findByIdAndDelete(id)
         return comment
     }
