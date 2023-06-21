@@ -10,8 +10,6 @@ class AuthMiddleware {
             if(!token) {
                 return res.status(401).json({ message: 'Пользователь не авторизован' })
             }
-
-
             const decodedData = jwt.verify(token, settings.secret)
             req.user = decodedData
 

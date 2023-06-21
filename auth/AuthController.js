@@ -7,7 +7,6 @@ import settings from '../config.js';
 
 const generateAccessToken = (id, roles) => {
     const dto = {id, roles}
-
     return jwt.sign(dto, settings.secret, {expiresIn: '24h'})
 }
 
@@ -51,9 +50,8 @@ class AuthController {
             if (!validPassword) {
                 return res.status(400).json({ message: `Введен неверный пароль` })
             }
-
+            console.log('useruser', user)
             req.session.user = user
-            
             
             const token = generateAccessToken(user._id, user.roles)
             return res.json({token})

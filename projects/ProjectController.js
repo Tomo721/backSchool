@@ -78,12 +78,13 @@ class ProjectController {
 
                     const authorAuth = req.user.id
 
-                    if (project.author !== authorAuth || !isAdmin) {
+                    if (project.author === authorAuth || isAdmin) {
+                        await ProjectService.deleteProject(project.id)
+                        return res.status(200).json({ message: `Проект удален` })
+                    } else {
                         return res.status(500).json({ message: 'Можно удалять только свои проекты' })
                     }
 
-                    await ProjectService.deleteProject(project.id)
-                    return res.status(200).json({ message: `Проект удален` })
                 } else {
                     return res.status(400).json(project)
                 }

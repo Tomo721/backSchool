@@ -18,7 +18,7 @@ let secret = 'secretKey';
 app.use(session({
     secret: secret,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
         httpOnly: false,
     }

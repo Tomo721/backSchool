@@ -13,6 +13,7 @@ class TaskController {
         try {
             let payload = req.body
 
+            console.log('req.user.id', req.user.id)
             payload.author = req.user.id
             payload.executor = payload.executor || req.user.id
             
@@ -142,22 +143,21 @@ class TaskController {
                 const task = await TaskService.getTask(req.params.id)
                 if (task.id) {
                     let isAdmin;
-
                     if (req.user.roles.indexOf('ADMIN') !== -1) {
                         isAdmin = true
                     } else {
                         isAdmin = false
                     }
-
                     const authorAuth = req.user.id
                     const taskBD = await Task.findById(task.id)
-
-                    if (taskBD.author !== authorAuth || !isAdmin) {
+                    
+                    if (taskBD.author === authorAuth || isAdmin) {
+                        await TaskService.deleteTask(task.id)
+                        return res.status(200).json({ message: `Задача удалена` })
+                    } else {
                         return res.status(500).json({ message: 'Можно удалять только свои задачи' })
                     }
-
-                    await TaskService.deleteTask(task.id)
-                    return res.status(200).json({ message: `Задача удалена` })
+                    
                 } else {
                     return res.status(400).json(task)
                 }

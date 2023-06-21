@@ -83,12 +83,14 @@ class CommentController {
                     const authorAuth = req.user.id
                     const commentBD = await Comment.findById(req.params.id)
 
-                    if (commentBD.author !== authorAuth || !isAdmin) {
+                    if (commentBD.author === authorAuth || isAdmin) {
+                        await CommentService.deleteComment(req.params.id)
+                        return res.status(200).json({ message: `Комментарий удален` })
+                    } else {
                         return res.status(500).json({ message: 'Можно удалять только свои комментарии' })
                     }
 
-                    await CommentService.deleteComment(req.params.id)
-                    return res.status(200).json({ message: `Комментарий удален` })
+                    
                 } else {
                     return res.status(400).json(comments)
                 }
