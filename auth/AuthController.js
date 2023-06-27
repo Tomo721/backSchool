@@ -41,7 +41,7 @@ class AuthController {
         try {
             const {login, password} = req.body
             const user = await User.findOne({ login })
-
+            
             if (!user) {
                 return res.status(400).json({ message: `Пользователя ${login} не существует` })
             }
@@ -50,7 +50,6 @@ class AuthController {
             if (!validPassword) {
                 return res.status(400).json({ message: `Введен неверный пароль` })
             }
-            console.log('useruser', user)
             req.session.user = user
             
             const token = generateAccessToken(user._id, user.roles)

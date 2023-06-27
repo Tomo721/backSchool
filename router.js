@@ -20,6 +20,7 @@ router.put('/users/password', AuthMiddleware.AuthUserCheck, UserController.updat
 router.put('/users/status', AuthMiddleware.AuthUserCheck, UserController.updateStatus)
 router.post('/users/search', AuthMiddleware.AuthUserCheck, UserController.getUsers)
 // router.get('/users/:name', AuthMiddleware.AuthUserCheck, UserController.getUser)
+router.get('/users/current', AuthMiddleware.AuthUserCheck, UserController.getCurrentUser)
 
 router.post('/projects', AuthMiddleware.AuthUserCheck, ProjectController.createProject)
 router.put('/projects', AuthMiddleware.AuthUserCheck, ProjectController.editeProject)

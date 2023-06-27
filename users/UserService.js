@@ -108,16 +108,12 @@ class UserService {
 
 
     }
-    // async getUser(id) {
-        
-    //     if (!id) {
-    //         throw new Error('id не указан')
-    //     }
-    //     const user = await User.findById({}, excludeFilelds).exec()
-    //     // const user = await User.findOne({ "id": id }, excludeFilelds).exec()
-
-    //     return user
-    // }
+    async getCurrentUser(id) {
+        console.log('sadfsad')
+        const user = await User.findById(id, excludeFilelds).exec()
+        console.log('!@@@@', user)
+        return user
+    }
 }
 
 export default new UserService()
