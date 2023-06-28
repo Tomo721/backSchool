@@ -8,7 +8,7 @@ import User from '../users/User.js';
 import mongoose from 'mongoose'
 
 class TaskController {
-
+   
     async createTask(req, res) {
         try {
             let payload = req.body
@@ -16,7 +16,7 @@ class TaskController {
             console.log('req.user.id', req.user.id)
             payload.author = req.user.id
             payload.executor = payload.executor || req.user.id
-
+            
             Project.findById(payload.projectId).exec(function (error) {
                 if (error) {
                     return res.status(500).json({ message: 'Такого проекта не существует' })
@@ -34,7 +34,7 @@ class TaskController {
             if (payload.status && StatusService.getStatuses().indexOf(payload.status) === -1) {
                 return res.status(500).json({ message: 'Такого статуса не существует' })
             }
-
+            
             const task = await TaskService.createTask(payload)
             res.json(task)
         }
@@ -61,31 +61,36 @@ class TaskController {
                 payload.name = taskBD.name
                 payload.description = taskBD.description
             }
-            if (payload.projectId) {
-                Project.findById(payload.projectId).exec(function (error) {
-                    if (error) {
-                        return res.status(500).json({ message: 'Такого проекта не существует' })
-                    }
-                });
+            if (payload.projectId && mongoose.Types.ObjectId.isValid(payload.projectId)) {
+                let checkProject = await Project.findById(payload.projectId)
 
-                const taskBDList = await Task.find()
-                const taskBDFilteredProject = taskBDList.filter(x => x.projectId === payload.projectId)
-                payload.number = taskBDFilteredProject.length + 1
+                if (checkProject) {
+                    const taskBDList = await Task.find()
+                    const taskBDFilteredProject = taskBDList.filter(x => x.projectId === payload.projectId)
+                    payload.number = taskBDFilteredProject.length + 1
+                } else {
+                    return res.status(500).json({ message: 'Такого проекта не существует' })
+                }
+            } else {
+                return res.status(500).json({ message: 'Такого проекта не существует' })
             }
-            if (payload.executor) {
-                User.findById(payload.executor).exec(function (error) {
-                    if (error) {
-                        return res.status(500).json({ message: 'Такого пользователя не существует' })
-                    }
-                });
+
+            if (payload.executor && mongoose.Types.ObjectId.isValid(payload.executor)) {
+                let user = await User.findById(payload.executor)
+
+                if (!user) {
+                    return res.status(500).json({ message: 'Такого пользователя не существует' })
+                }
+
+            } else {
+                return res.status(500).json({ message: 'Такого пользователя не существует' })
             }
 
             if (payload.status && StatusService.getStatuses().indexOf(payload.status) === -1) {
                 return res.status(500).json({ message: 'Такого статуса не существует' })
             }
-
             let fieldsEdited = Object.keys(payload)
-
+            
             let hystoryChanges = HystoryFields.map((field) => {
                 const nameField = field
 
@@ -103,7 +108,7 @@ class TaskController {
             const filteredHystoryChanges = hystoryChanges.filter((el) => el !== undefined);
 
             await Hystory.create(filteredHystoryChanges)
-
+            
             const editTask = await TaskService.editeTask(payload)
             return res.json(editTask)
         }
@@ -150,14 +155,14 @@ class TaskController {
                     }
                     const authorAuth = req.user.id
                     const taskBD = await Task.findById(task.id)
-
+                    
                     if (taskBD.author === authorAuth || isAdmin) {
                         await TaskService.deleteTask(task.id)
                         return res.status(200).json({ message: `Задача удалена` })
                     } else {
                         return res.status(500).json({ message: 'Можно удалять только свои задачи' })
                     }
-
+                    
                 } else {
                     return res.status(400).json(task)
                 }
@@ -166,7 +171,7 @@ class TaskController {
             }
         }
         catch (e) {
-            res.status(500).json({ message: `${e}` })
+            res.status(500).json({message: `${e}`})
         }
     }
 }

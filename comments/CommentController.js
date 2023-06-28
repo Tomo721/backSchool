@@ -33,7 +33,7 @@ class CommentController {
             const authorAuth = req.user.id
             req.body.author = authorAuth
             req.body.authorEdited = authorAuth
-            req.body.dateEdited = new Date().toISOString().split('T')[0]
+            req.body.dateEdited = new Date().toISOString()
 
             const commentBD = await Comment.findById(req.body._id)
 
