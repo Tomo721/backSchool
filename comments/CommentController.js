@@ -9,6 +9,7 @@ class CommentController {
         try {
             const authorAuth = req.user.id
             req.body.author = authorAuth
+            req.body.dateCreated = new Date().toISOString()
 
             Task.findById(req.body.taskId).exec(function (error) {
                 if (error) {

@@ -5,7 +5,7 @@ const Project = new mongoose.Schema({
     code: { type: String, maxLength: [64, 'Код слишком длинный'], required: true },
     author: { type: String, default: null },
     authorEdited: { type: String, default: null },
-    dateCreated: { type: String, default: new Date().toISOString() },
+    dateCreated: { type: String, default: null },
     dateEdited: { type: String, default: null },
 
 })

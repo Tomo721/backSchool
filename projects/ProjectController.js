@@ -7,6 +7,7 @@ class ProjectController {
     async createProject(req, res) {
         try {
             req.body.author = req.user.id
+            req.body.dateCreated = new Date().toISOString()
 
             const project = await ProjectService.createProject(req.body)
             res.json(project)

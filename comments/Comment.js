@@ -24,7 +24,7 @@ const Comment = new mongoose.Schema({
     },
     dateCreated: {
         type: String,
-        default: new Date().toISOString()
+        default: null
     },
     dateEdited: {
         type: String,

@@ -13,9 +13,9 @@ class TaskController {
         try {
             let payload = req.body
 
-            console.log('req.user.id', req.user.id)
             payload.author = req.user.id
             payload.executor = payload.executor || req.user.id
+            payload.dateCreated = new Date().toISOString()
 
             Project.findById(payload.projectId).exec(function (error) {
                 if (error) {
