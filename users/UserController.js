@@ -48,6 +48,24 @@ class UserController {
             res.status(500).json(e.message)
         }
     }
+    async updatePicture(req, res) {
+        try {
+            const userBD = await UserService.getCurrentUser(req.body._id)
+            const userBDPicture = userBD.picture ? userBD.picture : null
+
+            let picture = req.files ? req.files.picture : userBDPicture
+
+            if (req.body.picture) {
+                picture = null
+            }
+
+            const updatedUserPicture = await UserService.updatePicture(req.body, picture)
+            return res.json(updatedUserPicture)
+        }
+        catch (e) {
+            res.status(500).json(e.message)
+        }
+    }
     async getUsers(req, res) {
         try {
             const users = await UserService.getUsers(req.body)

@@ -27,6 +27,10 @@ class UserService {
         if (user.status) {
             throw new Error('status изменять нельзя')
         }
+        if (user.picture) {
+            throw new Error('picture изменять нельзя')
+        }
+
         const updatedUser = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
         return updatedUser
 
@@ -41,6 +45,9 @@ class UserService {
         if (user.status) {
             throw new Error('status изменять нельзя')
         }
+        if (user.picture) {
+            throw new Error('picture изменять нельзя')
+        }
         user.password = bcrypt.hashSync(user.password, 3)
 
         const updatedUserPassword = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v'})
@@ -54,12 +61,44 @@ class UserService {
         if (user.login) {
             throw new Error('login изменять нельзя')
         }
+        if (user.password) {
+            throw new Error('password изменять нельзя')
+        }
+        if (user.picture) {
+            throw new Error('picture изменять нельзя')
+        }
         if (!isAdmin) {
             throw new Error('Только ADMIN может изменить статус пользователя')
         }
         
         const updatedUserStatus = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
         return updatedUserStatus
+    }
+    async updatePicture(user, picture) {
+        if (!user._id) {
+            throw new Error('id не указан')
+        }
+        if (user.login) {
+            throw new Error('login изменять нельзя')
+        }
+        if (user.password) {
+            throw new Error('password изменять нельзя')
+        }
+        if (user.status) {
+            throw new Error('status изменять нельзя')
+        }
+
+        if (picture && typeof picture === 'string') {
+            user.picture = picture
+        } else if (!picture) {
+            user.picture = null
+        } else {
+            const fileName = picture ? fileService.saveFile(picture) : null
+            user.picture = fileName
+        }
+
+        const updatedUserPicture = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
+        return updatedUserPicture
 
     }
     async getUsers(dto, page, limit) {
@@ -109,9 +148,7 @@ class UserService {
 
     }
     async getCurrentUser(id) {
-        console.log('sadfsad')
         const user = await User.findById(id, excludeFilelds).exec()
-        console.log('!@@@@', user)
         return user
     }
 }
