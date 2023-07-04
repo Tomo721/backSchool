@@ -45,7 +45,6 @@ class TaskController {
     async editeTask(req, res) {
         try {
             let payload = req.body
-
             if (!payload._id) {
                 return res.status(500).json({ message: 'id не указан' })
             }

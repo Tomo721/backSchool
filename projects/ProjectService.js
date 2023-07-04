@@ -45,20 +45,32 @@ class ProjectService {
             sortType = dto.sort.type === 'desc' ? -1 : 1
         }
 
+        let filters = []
+
+        if (dto.filter && dto.filter.name) {
+            filters.push(
+                { name: { $regex: dto.filter.name, $options: "i" } },
+                { code: { $regex: dto.filter.name, $options: "i" } }
+            )
+        }
+        
         if (!dto.filter) {
             projects = await Project.find({}, excludeFilelds).skip(skip).limit(limit).sort(sortField ? { [sortField]: sortType } : {})
         } else {
             projects = await Project.find(
                 {
-                    $or: [
-                        { name: dto.filter.name ? { $regex: dto.filter.name, $options: "i" } : '' },
-                        { code: dto.filter.code ? { $regex: dto.filter.code, $options: "i" } : '' },
-                    ]
+                    $or: filters
                 },
                 excludeFilelds).skip(skip).limit(limit).sort(sortField ? { [sortField]: sortType } : {})
         }
 
-        const projectAll = await Project.find()
+        let projectAll = []
+
+        if (dto.filter) {
+            projectAll = await Project.find({ $or: filters }, excludeFilelds)
+        } else {
+            projectAll = await Project.find()
+        }
         
         let total = Math.floor(projectAll.length / limit);
 
