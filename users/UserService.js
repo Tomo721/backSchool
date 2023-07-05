@@ -117,8 +117,14 @@ class UserService {
         let filters = []
 
         if (dto.filter && dto.filter.name) {
+            dto.filter._id = null
             filters.push(
                 { name: { $regex: dto.filter.name, $options: "i" } },
+            )
+        }
+        if (dto.filter && dto.filter._id) {
+            filters.push(
+                { _id: { $regex: dto.filter._id, $options: "i" } },
             )
         }
 
@@ -131,28 +137,35 @@ class UserService {
         }
 
         if (dto.filter) {
-            users = await User.find(
-                { $or: filters }, excludeFilelds
-            ).skip(skip).limit(limit).sort({ "name": sortUsers })
+            
+            if (dto.filter.name) {
+                users = await User.find(
+                    { $or: filters }, excludeFilelds
+                ).skip(skip).limit(limit).sort({ "name": sortUsers })
+            }
+            if (dto.filter._id) {
+                let test = await User.findById(dto.filter._id, excludeFilelds)
+                users = [test]
+            }
         } else {
             users = await User.find({}, excludeFilelds).skip(skip).limit(limit).sort({ "name": sortUsers })
         }
-
-
         let usersAll = []
 
-        if (dto.filter) {
+        if (dto.filter.name) {
             usersAll = await User.find({ $or: filters }, excludeFilelds)
         } else {
             usersAll = await User.find()
         }
-        
         let total = Math.floor(usersAll.length / limit);
 
         if (usersAll.length % limit >= 1) {
             total++;
         };
 
+        if (dto.filter._id) {
+            total = 1
+        }
         return { page, limit, total, users }
 
 
