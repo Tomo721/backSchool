@@ -152,7 +152,7 @@ class UserService {
         }
         let usersAll = []
 
-        if (dto.filter.name) {
+        if (dto.filter && dto.filter.name) {
             usersAll = await User.find({ $or: filters }, excludeFilelds)
         } else {
             usersAll = await User.find()
@@ -163,7 +163,7 @@ class UserService {
             total++;
         };
 
-        if (dto.filter._id) {
+        if (dto.filter && dto.filter._id) {
             total = 1
         }
         return { page, limit, total, users }
