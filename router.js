@@ -36,6 +36,7 @@ router.put('/tasks', AuthMiddleware.AuthUserCheck, TaskController.editeTask)
 router.post('/tasks/search', AuthMiddleware.AuthUserCheck, TaskController.getTasks)
 router.get('/tasks/:id', AuthMiddleware.AuthUserCheck, TaskController.getTask)
 router.delete('/tasks/:id', AuthMiddleware.AuthUserCheck, TaskController.deleteTask)
+// router.get('/tasks/project/:id', AuthMiddleware.AuthUserCheck, TaskController.getTaskProject)
 
 router.post('/comments', AuthMiddleware.AuthUserCheck, CommentController.createComment)
 router.put('/comments', AuthMiddleware.AuthUserCheck, CommentController.editeComment)

@@ -136,6 +136,23 @@ class TaskController {
             res.status(500).json(e)
         }
     }
+    // async getTaskProject(req, res) {
+    //     try {
+    //         if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+    //             const task = await TaskService.getTaskProject(req.params.projectId)
+    //             if (task.id) {
+    //                 return res.json(task)
+    //             } else {
+    //                 return res.status(400).json(task)
+    //             }
+    //         } else {
+    //             return res.status(400).json({ message: 'Неверный формат id' })
+    //         }
+    //     }
+    //     catch (e) {
+    //         res.status(500).json(e)
+    //     }
+    // }
     async deleteTask(req, res) {
         try {
             if (mongoose.Types.ObjectId.isValid(req.params.id)) {

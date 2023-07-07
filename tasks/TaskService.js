@@ -53,7 +53,7 @@ class Taskservice {
             if (key === 'status' && dto.filter[key].length !== 0 ) {
                 filters.push({ [key]: dto.filter[key] })
             }
-            if (dto.filter[key] && key === 'author' || dto.filter[key] && key === 'executor') {
+            if (dto.filter[key] && key === 'author' || dto.filter[key] && key === 'executor' || dto.filter[key] && key === 'projectId') {
                 filters.push({ [key]: dto.filter[key] })
             }
             
@@ -116,6 +116,16 @@ class Taskservice {
         }
 
     }
+    // async getTaskProject(id) {
+    //     const task = await Task.find({ id }, excludeFilelds).exec()
+
+    //     if (task) {
+    //         return task
+    //     } else {
+    //         return { message: 'Задачи с таким id не существует' }
+    //     }
+
+    // }
     async deleteTask(id) {
         const task = await Task.findByIdAndDelete(id)
         return task
