@@ -124,7 +124,7 @@ class UserService {
         }
         if (dto.filter && dto.filter._id) {
             filters.push(
-                { _id: { $regex: dto.filter._id, $options: "i" } },
+                { _id: dto.filter._id },
             )
         }
 
@@ -136,7 +136,8 @@ class UserService {
             sortUsers = dto.sort === 'desc' ? -1 : 1
         }
 
-        if (dto.filter) {
+        
+        if (filters.length !== 0) {
             
             if (dto.filter.name) {
                 users = await User.find(
@@ -152,7 +153,7 @@ class UserService {
         }
         let usersAll = []
 
-        if (dto.filter && dto.filter.name) {
+        if (filters.length !== 0) {
             usersAll = await User.find({ $or: filters }, excludeFilelds)
         } else {
             usersAll = await User.find()

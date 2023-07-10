@@ -54,7 +54,7 @@ class ProjectService {
             )
         }
         
-        if (!dto.filter) {
+        if (filters.length === 0) {
             projects = await Project.find({}, excludeFilelds).skip(skip).limit(limit).sort(sortField ? { [sortField]: sortType } : {})
         } else {
             projects = await Project.find(
@@ -66,7 +66,7 @@ class ProjectService {
 
         let projectAll = []
 
-        if (dto.filter) {
+        if (filters.length !== 0) {
             projectAll = await Project.find({ $or: filters }, excludeFilelds)
         } else {
             projectAll = await Project.find()
