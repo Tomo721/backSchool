@@ -45,18 +45,17 @@ class Taskservice {
         // }
         
         let filters = []
-
+        
         for (let key in dto.filter) {
             if (key === 'name' && dto.filter[key]) {
                 filters.push({ [key]: { $regex: dto.filter[key], $options: "i" } })
             }
-            if (key === 'status' && dto.filter[key].length !== 0 ) {
+            if (key === 'status' && dto.filter[key] || key === 'status' && dto.filter[key] && dto.filter[key].length !== 0 ) {
                 filters.push({ [key]: dto.filter[key] })
             }
             if (dto.filter[key] && key === 'author' || dto.filter[key] && key === 'executor' || dto.filter[key] && key === 'projectId') {
                 filters.push({ [key]: dto.filter[key] })
             }
-            
             if (dto.filter.dateStart && dto.filter.dateEnd) {
                 filters.push({
                     dateCreated: {
@@ -79,7 +78,7 @@ class Taskservice {
             }
         }
         
-        if (!dto.filter) {
+        if (filters.length === 0) {
             tasks = await Task.find({}, excludeFilelds).skip(skip).limit(limit).sort(sortField ? { [sortField]: sortType } : {})
         } else {
             tasks = await Task.find(
@@ -90,7 +89,7 @@ class Taskservice {
 
         let taskAll = []
 
-        if (dto.filter) {
+        if (filters.length !== 0) {
             taskAll = await Task.find({ $and: filters }, excludeFilelds)
         } else {
             taskAll = await Task.find()
