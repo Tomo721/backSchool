@@ -5,7 +5,6 @@ import router from './router.js'
 import fileUpload from 'express-fileupload'
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
-// import connectHistory from 'connect-history-api-fallback'
 
 const PORT = process.env.PORT || 8081;
 const DB_URL = 'mongodb+srv://admin:admin@cluster1.3pbsl0a.mongodb.net/?retryWrites=true&w=majority';
@@ -13,7 +12,6 @@ const DB_URL = 'mongodb+srv://admin:admin@cluster1.3pbsl0a.mongodb.net/?retryWri
 const app = express()
 
 app.use(cookieParser());
-// app.use(connectHistory());
 
 let secret = 'secretKey';
 

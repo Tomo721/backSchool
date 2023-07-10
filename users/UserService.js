@@ -166,8 +166,8 @@ class UserService {
         if (dto.filter && dto.filter._id) {
             total = 1
         }
+        
         return { page, limit, total, users }
-
 
     }
     async getCurrentUser(id) {

@@ -18,17 +18,25 @@ class ProjectController {
     }
     async editeProject(req, res) {
         try {
-            const authorAuth = req.user.id
-            req.body.author = authorAuth
-            req.body.authorEdited = authorAuth
-
-            req.body.dateEdited = new Date().toISOString()
-
             const projectBD = await Project.findById(req.body._id)
 
-            if (projectBD.author !== authorAuth) {
+            const authorAuth = req.user.id
+
+            let isAdmin;
+
+            if (req.user.roles.indexOf('ADMIN') !== -1) {
+                isAdmin = true
+            } else {
+                isAdmin = false
+            }
+
+            if (projectBD.author !== authorAuth && !isAdmin) {
                 return res.status(500).json({ message: 'Можно редактировать только свои проекты' })
             }
+
+            req.body.author = projectBD.author
+            req.body.authorEdited = authorAuth
+            req.body.dateEdited = new Date().toISOString()
 
             const editProject = await ProjectService.editeProject(req.body)
             return res.json(editProject)

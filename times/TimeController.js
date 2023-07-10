@@ -18,7 +18,15 @@ class TimeController {
 
             const taskBD = await Task.findById(payload.taskId)
 
-            if (taskBD.executor !== authorAuth) {
+            let isAdmin;
+
+            if (req.user.roles.indexOf('ADMIN') !== -1) {
+                isAdmin = true
+            } else {
+                isAdmin = false
+            }
+
+            if (taskBD.executor !== authorAuth && !isAdmin) {
                 return res.status(500).json({ message: 'Списывать время может только executor' })
             }
             

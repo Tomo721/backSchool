@@ -50,16 +50,24 @@ class TaskController {
             }
 
             const authorAuth = req.user.id
-            payload.author = authorAuth
+            const taskBD = await Task.findById(payload._id)
+
+            let isAdmin;
+
+            if (req.user.roles.indexOf('ADMIN') !== -1) {
+                isAdmin = true
+            } else {
+                isAdmin = false
+            }
+
+            if (taskBD.author !== authorAuth && !isAdmin) {
+                return res.status(500).json({ message: 'Можно редактировать только свои задачи' })
+            }
+
+            payload.author = taskBD.author
             payload.authorEdited = authorAuth
             payload.dateEdited = new Date().toISOString()
 
-            const taskBD = await Task.findById(payload._id)
-
-            if (taskBD.author !== authorAuth) {
-                payload.name = taskBD.name
-                payload.description = taskBD.description
-            }
             if (payload.projectId) {
                 Project.findById(payload.projectId).exec(function (error) {
                     if (error) {
@@ -69,7 +77,14 @@ class TaskController {
 
                 const taskBDList = await Task.find()
                 const taskBDFilteredProject = taskBDList.filter(x => x.projectId === payload.projectId)
-                payload.number = taskBDFilteredProject.length + 1
+
+                if (taskBDFilteredProject && taskBDFilteredProject.length === 0) {
+                    payload.number = 1
+                } else if (taskBDFilteredProject.length === 1 && taskBDFilteredProject[0]._id === payload._id) {
+                    payload.number = 1
+                } else {
+                    payload.number = taskBDFilteredProject.length + 1
+                }
             }
             if (payload.executor) {
                 User.findById(payload.executor).exec(function (error) {
@@ -136,23 +151,6 @@ class TaskController {
             res.status(500).json(e)
         }
     }
-    // async getTaskProject(req, res) {
-    //     try {
-    //         if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-    //             const task = await TaskService.getTaskProject(req.params.projectId)
-    //             if (task.id) {
-    //                 return res.json(task)
-    //             } else {
-    //                 return res.status(400).json(task)
-    //             }
-    //         } else {
-    //             return res.status(400).json({ message: 'Неверный формат id' })
-    //         }
-    //     }
-    //     catch (e) {
-    //         res.status(500).json(e)
-    //     }
-    // }
     async deleteTask(req, res) {
         try {
             if (mongoose.Types.ObjectId.isValid(req.params.id)) {

@@ -11,11 +11,25 @@ class CommentController {
             req.body.author = authorAuth
             req.body.dateCreated = new Date().toISOString()
 
-            Task.findById(req.body.taskId).exec(function (error) {
+            Task.findById(req.body.taskId).exec(function(error, task) {
                 if (error) {
                     return res.status(500).json({ message: 'Такой задачи не существует' })
                 }
             });
+
+            if (req.body.parentId) {
+                let comments = await Comment.find()
+                const commentsFiltered = comments.filter(x => x.taskId == req.body.taskId)
+                
+                if (commentsFiltered.length !== 0) {
+                    let commentParent = commentsFiltered.filter(x => x._id == req.body.parentId)
+
+                    if (!commentParent || commentParent.length === 0) {
+                        return res.status(500).json({ message: 'Такого комментария нет в этой задаче, укажите верный parentId' })
+                    }
+                }
+
+            }
             
             const comment = await CommentService.createComment(req.body)
             res.json(comment)
@@ -31,15 +45,37 @@ class CommentController {
                     return res.status(500).json({ message: 'Такой задачи не существует' })
                 }
             });
-            const authorAuth = req.user.id
-            req.body.author = authorAuth
-            req.body.authorEdited = authorAuth
-            req.body.dateEdited = new Date().toISOString()
 
             const commentBD = await Comment.findById(req.body._id)
 
-            if (commentBD.author !== authorAuth) {
+            const authorAuth = req.user.id
+            req.body.author = commentBD.author
+            req.body.authorEdited = authorAuth
+            req.body.dateEdited = new Date().toISOString()
+
+            let isAdmin;
+
+            if (req.user.roles.indexOf('ADMIN') !== -1) {
+                isAdmin = true
+            } else {
+                isAdmin = false
+            }
+
+            if (commentBD.author !== authorAuth && !isAdmin) {
                 return res.status(500).json({ message: 'Можно редактировать только свои комментарии' })
+            }
+
+            if (req.body.parentId) {
+                let comments = await Comment.find()
+                const commentsFiltered = comments.filter(x => x.taskId == req.body.taskId)
+
+                if (commentsFiltered.length !== 0) {
+                    let commentParent = commentsFiltered.filter(x => x._id == req.body.parentId)
+                    if (!commentParent || commentParent.length === 0) {
+                        return res.status(500).json({ message: 'Такого комментария нет в этой задаче, укажите верный parentId' })
+                    }
+                }
+
             }
 
             const editComment = await CommentService.editeComment(req.body)
