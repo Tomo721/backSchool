@@ -122,6 +122,11 @@ class UserService {
                 { name: { $regex: dto.filter.name, $options: "i" } },
             )
         }
+        // if (dto.filter && dto.filter._id && dto.filter._id.length !== 0) {
+        //     filters.push(
+        //         { _id: dto.filter._id },
+        //     )
+        // }
         if (dto.filter && dto.filter._id) {
             filters.push(
                 { _id: dto.filter._id },
@@ -145,8 +150,15 @@ class UserService {
                 ).skip(skip).limit(limit).sort({ "name": sortUsers })
             }
             if (dto.filter._id) {
-                let test = await User.findById(dto.filter._id, excludeFilelds)
-                users = [test]
+                if (dto.filter._id.length !== 0) {
+                    let usersSearchId = await User.find({ $and: filters }, excludeFilelds)
+                    users = usersSearchId
+                    
+                } else {
+                    let userSearchId = await User.findById(dto.filter._id, excludeFilelds)
+                    users = [userSearchId]
+
+                }
             }
         } else {
             users = await User.find({}, excludeFilelds).skip(skip).limit(limit).sort({ "name": sortUsers })
