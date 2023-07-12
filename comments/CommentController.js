@@ -121,12 +121,14 @@ class CommentController {
                     const commentBD = await Comment.findById(req.params.id)
 
                     if (commentBD.author === authorAuth || isAdmin) {
+
+                        await Comment.updateMany({ parentId: req.params.id }, { $set: { parentId: null }})
                         await CommentService.deleteComment(req.params.id)
+
                         return res.status(200).json({ message: `Комментарий удален` })
                     } else {
                         return res.status(500).json({ message: 'Можно удалять только свои комментарии' })
                     }
-
                     
                 } else {
                     return res.status(400).json(comments)
