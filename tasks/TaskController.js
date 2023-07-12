@@ -99,7 +99,7 @@ class TaskController {
             }
 
             let fieldsEdited = Object.keys(payload)
-
+            console.log('payload.dateEdited', payload.dateEdited)
             let hystoryChanges = HystoryFields.map((field) => {
                 const nameField = field
 
@@ -109,6 +109,7 @@ class TaskController {
                         field: nameField,
                         author: authorAuth,
                         newValue: payload[field],
+                        dateEdited: payload.dateEdited
                     }
                 }
 
