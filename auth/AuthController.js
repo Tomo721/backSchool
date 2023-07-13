@@ -29,9 +29,8 @@ class AuthController {
 
             req.body.password = hashPassword
             req.body.roles = [userRole.value]
-
-            await UserController.createUser(req)
-            res.json('Пользователь зарегистрирован')
+            let userCreated = await UserController.createUser(req)
+            res.json({message: 'Пользователь зарегистрирован', _id: userCreated._id})
         }
         catch (e) {
             console.log('registration error', e)
