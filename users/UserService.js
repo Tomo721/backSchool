@@ -3,6 +3,7 @@ import fileService from '../fileService.js';
 import bcrypt from 'bcryptjs';
 
 const excludeFilelds = {
+    login: false,
     password: false, 
     __v: false,
 }
@@ -30,7 +31,7 @@ class UserService {
             throw new Error('picture изменять нельзя')
         }
 
-        const updatedUser = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -__v' })
+        const updatedUser = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
         return updatedUser
 
     }
@@ -49,7 +50,7 @@ class UserService {
         }
         user.password = bcrypt.hashSync(user.password, 3)
 
-        const updatedUserPassword = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -__v'})
+        const updatedUserPassword = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v'})
         return updatedUserPassword
 
     }
@@ -70,7 +71,7 @@ class UserService {
             throw new Error('Только ADMIN может изменить статус пользователя')
         }
         
-        const updatedUserStatus = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -__v' })
+        const updatedUserStatus = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
         return updatedUserStatus
     }
     async updatePicture(user, picture) {
@@ -96,7 +97,7 @@ class UserService {
             user.picture = fileName
         }
 
-        const updatedUserPicture = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -__v' })
+        const updatedUserPicture = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
         return updatedUserPicture
 
     }
@@ -111,6 +112,11 @@ class UserService {
             limit = 10
         } else {
             limit = parseInt(dto.limit)
+        }
+
+        let excludeFileldsCurrent = {
+            password: false,
+            __v: false,
         }
 
         let filters = []
@@ -145,27 +151,27 @@ class UserService {
             
             if (dto.filter.name) {
                 users = await User.find(
-                    { $or: filters }, excludeFilelds
+                    { $or: filters }, excludeFileldsCurrent
                 ).skip(skip).limit(limit).sort({ "name": sortUsers })
             }
             if (dto.filter._id) {
                 if (dto.filter._id.length !== 0) {
-                    let usersSearchId = await User.find({ $and: filters }, excludeFilelds)
+                    let usersSearchId = await User.find({ $and: filters }, excludeFileldsCurrent)
                     users = usersSearchId
                     
                 } else {
-                    let userSearchId = await User.findById(dto.filter._id, excludeFilelds)
+                    let userSearchId = await User.findById(dto.filter._id, excludeFileldsCurrent)
                     users = [userSearchId]
 
                 }
             }
         } else {
-            users = await User.find({}, excludeFilelds).skip(skip).limit(limit).sort({ "name": sortUsers })
+            users = await User.find({}, excludeFileldsCurrent).skip(skip).limit(limit).sort({ "name": sortUsers })
         }
         let usersAll = []
 
         if (filters.length !== 0) {
-            usersAll = await User.find({ $or: filters }, excludeFilelds)
+            usersAll = await User.find({ $or: filters }, excludeFileldsCurrent)
         } else {
             usersAll = await User.find()
         }
@@ -183,7 +189,11 @@ class UserService {
 
     }
     async getCurrentUser(id) {
-        const user = await User.findById(id, excludeFilelds).exec()
+        let excludeFileldsCurrent = {
+            password: false,
+            __v: false,
+        }
+        const user = await User.findById(id, excludeFileldsCurrent).exec()
         return user
     }
 }
