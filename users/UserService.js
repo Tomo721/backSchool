@@ -3,7 +3,6 @@ import fileService from '../fileService.js';
 import bcrypt from 'bcryptjs';
 
 const excludeFilelds = {
-    login: false,
     password: false, 
     __v: false,
 }
@@ -31,7 +30,7 @@ class UserService {
             throw new Error('picture изменять нельзя')
         }
 
-        const updatedUser = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
+        const updatedUser = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -__v' })
         return updatedUser
 
     }
@@ -50,7 +49,7 @@ class UserService {
         }
         user.password = bcrypt.hashSync(user.password, 3)
 
-        const updatedUserPassword = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v'})
+        const updatedUserPassword = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -__v'})
         return updatedUserPassword
 
     }
@@ -71,7 +70,7 @@ class UserService {
             throw new Error('Только ADMIN может изменить статус пользователя')
         }
         
-        const updatedUserStatus = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
+        const updatedUserStatus = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -__v' })
         return updatedUserStatus
     }
     async updatePicture(user, picture) {
@@ -97,7 +96,7 @@ class UserService {
             user.picture = fileName
         }
 
-        const updatedUserPicture = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -login -__v' })
+        const updatedUserPicture = await User.findByIdAndUpdate(user._id, user, { new: true, select: '-password -__v' })
         return updatedUserPicture
 
     }
